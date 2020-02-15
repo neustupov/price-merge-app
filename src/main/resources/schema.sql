@@ -12,4 +12,4 @@ alter table price drop constraint if exists product_code_number_depard_unic;
 alter table price add constraint product_code_price_number_depart_unic unique
 (product_code, price_number, depart);
 
-create sequence hibernate_sequence start with 3 increment by 1;
+create sequence hibernate_sequence start with 4 increment by 1;

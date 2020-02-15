@@ -1,5 +1,6 @@
 package ru.neustupov.pricemergeapp.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,10 +32,11 @@ public class Price {
   private int number;
   private int depart;
   @Column(name = "price_begin")
+  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
   private Date begin;
   @Column(name = "price_end")
+  @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
   private Date end;
   @Column(name = "price_value")
   private Long value;
-
 }
