@@ -32,10 +32,10 @@ public class Price {
   private int number;
   private int depart;
   @Column(name = "price_begin")
-  @JsonFormat(pattern="yyyy.MM.dd HH:mm:ss")
+  @JsonFormat(pattern="dd.MM.yyyy HH:mm:ss")
   private Date begin;
   @Column(name = "price_end")
-  @JsonFormat(pattern="yyyy.MM.dd HH:mm:ss")
+  @JsonFormat(pattern="dd.MM.yyyy HH:mm:ss")
   private Date end;
   @Column(name = "price_value")
   private Long value;
