@@ -2,7 +2,7 @@
 
 json body for request on http://localhost:8090/api/v1/prices/merge
 
-'''json
+```json
 [
     {
         "productCode": "122856",
@@ -29,4 +29,4 @@ json body for request on http://localhost:8090/api/v1/prices/merge
         "value": 4000
     }
 ]
-'''
+```
