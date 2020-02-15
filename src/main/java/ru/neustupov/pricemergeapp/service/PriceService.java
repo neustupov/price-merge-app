@@ -36,7 +36,9 @@ public class PriceService {
     List<Future<List<Price>>> futures = new ArrayList<>();
     for (Price newPrice : newPrices){
       List<Price> concurPrices = oldPrices.stream()
-          .filter(oldPrice -> oldPrice.getProductCode().equals(newPrice.getProductCode()))
+          .filter(oldPrice -> oldPrice.getProductCode().equals(newPrice.getProductCode())
+              && oldPrice.getDepart() == newPrice.getDepart()
+              && oldPrice.getNumber() == newPrice.getNumber())
           .collect(Collectors.toList());
       if (concurPrices.isEmpty()){
         totalPrices.add(newPrice);
@@ -48,7 +50,7 @@ public class PriceService {
     }
 
     try {
-      executor.awaitTermination(3, TimeUnit.SECONDS);
+      executor.awaitTermination(1, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }

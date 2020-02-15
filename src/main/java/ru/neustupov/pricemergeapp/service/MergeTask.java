@@ -26,10 +26,20 @@ public class MergeTask implements Callable<List<Price>> {
     List<Price> priceList = new ArrayList<>();
 
     if (checkDates(newPriceBeginDate, newPriceEndDate, oldPriceBeginDate, oldPriceEndDate)){
-      if (newPrice.getValue() == oldPrice.getValue()){
+      if (newPrice.getValue().equals(oldPrice.getValue())){
         oldPrice.setEnd(newPrice.getEnd());
         priceList.add(oldPrice);
       } else {
+        if (newPriceEndDate.before(oldPriceEndDate)){
+          Price createdPrice1 =  Price.builder().productCode(newPrice.getProductCode())
+              .number(newPrice.getNumber())
+              .depart(newPrice.getDepart())
+              .begin(newPriceEndDate)
+              .end(oldPriceEndDate)
+              .value(newPrice.getValue())
+              .build();
+          priceList.add(createdPrice1);
+        }
         Price createdPrice =  Price.builder().productCode(newPrice.getProductCode())
             .number(newPrice.getNumber())
             .depart(newPrice.getDepart())
@@ -37,7 +47,7 @@ public class MergeTask implements Callable<List<Price>> {
             .end(newPrice.getEnd())
             .value(newPrice.getValue())
             .build();
-        oldPrice.setEnd(newPriceEndDate);
+        oldPrice.setEnd(newPriceBeginDate);
         priceList.add(createdPrice);
         priceList.add(oldPrice);
       }
