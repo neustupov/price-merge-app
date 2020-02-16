@@ -39,14 +39,4 @@ public class Price {
   private LocalDateTime  end;
   @Column(name = "price_value")
   private Long value;
-
-  public Price(Price price) {
-    this.id = price.getId();
-    this.productCode = price.getProductCode();
-    this.number = price.getNumber();
-    this.depart = price.getDepart();
-    this.begin = price.getBegin();
-    this.end = price.getEnd();
-    this.value = price.getValue();
-  }
 }
