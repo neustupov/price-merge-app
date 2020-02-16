@@ -9,11 +9,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.neustupov.pricemergeapp.model.Price;
 import ru.neustupov.pricemergeapp.repository.PriceRepository;
 
+@Log4j2
 @Service
 public class PriceService {
 
@@ -27,7 +29,7 @@ public class PriceService {
   /**
    * Достаёт из репозитория список цен
    */
-  public List<Price> getAllPrices(){
+  public List<Price> getAllPrices() {
     return priceRepository.findAll();
   }
 
@@ -42,12 +44,11 @@ public class PriceService {
   }
 
   /**
-   * Основной метод преобразования списка старых цен на основе списка новых цен,
-   * выбрана итерация по новым ценам, поскольку логично предположить, что новых цен
-   * должно быть меньше, чем старых.
+   * Основной метод преобразования списка старых цен на основе списка новых цен, выбрана итерация по
+   * новым ценам, поскольку логично предположить, что новых цен должно быть меньше, чем старых.
    *
-   * Обработка производится в отдельных потоках, количество потоков выбирается исходя из
-   * параметров системы.
+   * Обработка производится в отдельных потоках, количество потоков выбирается исходя из параметров
+   * системы.
    *
    * @param newPrices Цена
    * @param oldPrices Начало
@@ -64,28 +65,28 @@ public class PriceService {
     Map<String, List<Price>> compNewPriceMap = newPrices.stream().collect(Collectors.groupingBy(
         this::makeGroupId));
 
-    for (Price newPrice : newPrices){
+    for (Price newPrice : newPrices) {
       List<Price> concurOldPrices = compOldPriceMap.get(makeGroupId(newPrice));
       List<Price> concurNewPrices = new ArrayList<>(compNewPriceMap.get(makeGroupId(newPrice)));
       concurNewPrices.remove(newPrice);
       // Если совпадений не найдено, просто добавляем новую цену в список без обработки
-      if (concurOldPrices.isEmpty()){
+      if (concurOldPrices.isEmpty()) {
         totalPrices.add(newPrice);
       } else {
-          futures.add(executor.submit(new MergeTask(newPrice, concurOldPrices, concurNewPrices)));
+        futures.add(executor.submit(new MergeTask(newPrice, concurOldPrices, concurNewPrices)));
       }
     }
 
     try {
       executor.awaitTermination(1, TimeUnit.SECONDS);
     } catch (InterruptedException e) {
-      e.printStackTrace();
+      log.error("Executor terminated with error: " + e);
     }
 
     futures.forEach(future -> {
       try {
         future.get().forEach(price -> {
-          if (!totalPrices.contains(price)){
+          if (!totalPrices.contains(price)) {
             totalPrices.add(price);
           }
         });
@@ -103,7 +104,7 @@ public class PriceService {
    *
    * @param price Цена
    */
-  private String makeGroupId(Price price){
+  private String makeGroupId(Price price) {
     return price.getProductCode()
         + price.getDepart()
         + price.getNumber();

@@ -23,12 +23,14 @@ public class PriceController {
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<Price> getBookById(){
+  public List<Price> getAllPrices() {
+    log.info("Get all prices method");
     return priceService.getAllPrices();
   }
 
   @PostMapping(value = "/merge", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public List<Price> mergePrices(@RequestBody List<Price> priceList){
+  public List<Price> mergePrices(@RequestBody List<Price> priceList) {
+    log.info("Merge prices method");
     return priceService.mergePrices(priceList);
   }
 }

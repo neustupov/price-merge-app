@@ -83,7 +83,7 @@ public class MergeTask implements Callable<List<Price>> {
    * @param begin Начало
    * @param end Конец
    */
-  private Price createNewPrice(Price price, LocalDateTime  begin, LocalDateTime  end){
+  private Price createNewPrice(Price price, LocalDateTime begin, LocalDateTime end) {
     return Price.builder().productCode(price.getProductCode())
         .number(price.getNumber())
         .depart(price.getDepart())
@@ -99,10 +99,10 @@ public class MergeTask implements Callable<List<Price>> {
    * @param oldPrice Параметры запроса
    * @param newPrices Список новых цен
    */
-  private boolean checkHit(Price oldPrice, List<Price> newPrices){
+  private boolean checkHit(Price oldPrice, List<Price> newPrices) {
     boolean expected = false;
-    for (Price newPrice : newPrices){
-      if (newPrice.getEnd().isAfter(oldPrice.getBegin())){
+    for (Price newPrice : newPrices) {
+      if (newPrice.getEnd().isAfter(oldPrice.getBegin())) {
         expected = true;
       }
     }

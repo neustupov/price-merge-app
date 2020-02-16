@@ -20,7 +20,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"product_code", "price_number", "depart"})})
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"product_code", "price_number", "depart"})})
 public class Price {
 
   @Id
@@ -32,11 +33,11 @@ public class Price {
   private int number;
   private int depart;
   @Column(name = "price_begin")
-  @JsonFormat(pattern="dd.MM.yyyy HH:mm:ss")
+  @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
   private LocalDateTime begin;
   @Column(name = "price_end")
-  @JsonFormat(pattern="dd.MM.yyyy HH:mm:ss")
-  private LocalDateTime  end;
+  @JsonFormat(pattern = "dd.MM.yyyy HH:mm:ss")
+  private LocalDateTime end;
   @Column(name = "price_value")
   private Long value;
 }
