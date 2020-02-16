@@ -77,7 +77,7 @@ public class MergeTask implements Callable<List<Price>> {
   }
 
   /**
-   * Создаёт новцю цену
+   * Создаёт новую цену
    *
    * @param price Цена
    * @param begin Начало
