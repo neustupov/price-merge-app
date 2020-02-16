@@ -1,7 +1,7 @@
 package ru.neustupov.pricemergeapp.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,10 +33,20 @@ public class Price {
   private int depart;
   @Column(name = "price_begin")
   @JsonFormat(pattern="dd.MM.yyyy HH:mm:ss")
-  private Date begin;
+  private LocalDateTime begin;
   @Column(name = "price_end")
   @JsonFormat(pattern="dd.MM.yyyy HH:mm:ss")
-  private Date end;
+  private LocalDateTime  end;
   @Column(name = "price_value")
   private Long value;
+
+  public Price(Price price) {
+    this.id = price.getId();
+    this.productCode = price.getProductCode();
+    this.number = price.getNumber();
+    this.depart = price.getDepart();
+    this.begin = price.getBegin();
+    this.end = price.getEnd();
+    this.value = price.getValue();
+  }
 }

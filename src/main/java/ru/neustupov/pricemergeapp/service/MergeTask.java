@@ -1,7 +1,7 @@
 package ru.neustupov.pricemergeapp.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 import lombok.AllArgsConstructor;
@@ -18,51 +18,61 @@ public class MergeTask implements Callable<List<Price>> {
   @Override
   public List<Price> call() {
 
-    Date newPriceBeginDate = newPrice.getBegin();
-    Date newPriceEndDate = newPrice.getEnd();
-    Date oldPriceBeginDate = oldPrice.getBegin();
-    Date oldPriceEndDate = oldPrice.getEnd();
+    LocalDateTime newPriceBegin = newPrice.getBegin();
+    LocalDateTime newPriceEnd = newPrice.getEnd();
+    LocalDateTime oldPriceBegin = oldPrice.getBegin();
+    LocalDateTime oldPriceEnd = oldPrice.getEnd();
 
     List<Price> priceList = new ArrayList<>();
 
-    if (checkDates(newPriceBeginDate, newPriceEndDate, oldPriceBeginDate, oldPriceEndDate)){
-      if (newPrice.getValue().equals(oldPrice.getValue())){
-        oldPrice.setEnd(newPrice.getEnd());
-        priceList.add(oldPrice);
-      } else {
-        if (newPriceEndDate.before(oldPriceEndDate)){
-          Price createdPrice1 =  Price.builder().productCode(newPrice.getProductCode())
-              .number(newPrice.getNumber())
-              .depart(newPrice.getDepart())
-              .begin(newPriceEndDate)
-              .end(oldPriceEndDate)
-              .value(newPrice.getValue())
-              .build();
-          priceList.add(createdPrice1);
+    if (newPriceEnd.isAfter(oldPriceBegin) | newPriceBegin.isBefore(oldPriceEnd)) {
+      if (!newPrice.getValue().equals(oldPrice.getValue())) {
+        // Случай, когда новая цена полностью в рамках старой
+        if (newPriceBegin.isAfter(oldPriceBegin) && newPriceEnd.isBefore(oldPriceEnd)) {
+          priceList.add(createNewPrice(oldPrice, oldPriceBegin, newPriceBegin));
+          priceList.add(createNewPrice(oldPrice, newPriceEnd, oldPriceEnd));
+          priceList.add(newPrice);
         }
-        Price createdPrice =  Price.builder().productCode(newPrice.getProductCode())
-            .number(newPrice.getNumber())
-            .depart(newPrice.getDepart())
-            .begin(newPrice.getBegin())
-            .end(newPrice.getEnd())
-            .value(newPrice.getValue())
-            .build();
-        oldPrice.setEnd(newPriceBeginDate);
-        priceList.add(createdPrice);
-        priceList.add(oldPrice);
+
+        // Случай, когда новая цена начинается раньше, и заканчивается раньше
+        if (newPriceBegin.isBefore(oldPriceBegin) && newPriceEnd.isBefore(oldPriceEnd)
+            && newPriceEnd.isAfter(oldPriceBegin)) {
+          oldPrice.setBegin(newPriceEnd);
+          priceList.add(oldPrice);
+          priceList.add(newPrice);
+        }
+
+        // Случай, когда новая цена начинается и заканчивается позже
+        if (newPriceBegin.isAfter(oldPriceBegin) && newPriceBegin.isBefore(oldPriceEnd) &&
+            newPriceEnd.isAfter(oldPriceEnd)) {
+          oldPrice.setEnd(newPriceBegin);
+          priceList.add(oldPrice);
+          priceList.add(newPrice);
+        }
+      } else {
+        // Случаи, когда цена совпадает
+        if (newPriceBegin.isBefore(oldPriceBegin) && newPriceEnd.isAfter(oldPriceEnd)) {
+          priceList.add(newPrice);
+        } else if (newPriceEnd.isAfter(oldPriceEnd)) {
+            oldPrice.setEnd(newPriceEnd);
+            priceList.add(oldPrice);
+
+        } else if (newPriceBegin.isBefore(oldPriceBegin)) {
+          oldPrice.setBegin(newPriceBegin);
+          priceList.add(oldPrice);
+        }
       }
-    } else {
-      priceList.add(newPrice);
     }
     return priceList;
   }
 
-  private boolean checkDates(Date newPriceBeginDate, Date newPriceEndDate,
-                             Date oldPriceBeginDate, Date oldPriceEndDate ){
-    if (newPriceBeginDate.after(oldPriceBeginDate) | newPriceBeginDate.before(oldPriceBeginDate) |
-        newPriceEndDate.before(oldPriceEndDate) | newPriceEndDate.after(oldPriceEndDate)){
-      return true;
-    }
-    return false;
+  private Price createNewPrice(Price price, LocalDateTime  begin, LocalDateTime  end){
+    return Price.builder().productCode(price.getProductCode())
+        .number(price.getNumber())
+        .depart(price.getDepart())
+        .begin(begin)
+        .end(end)
+        .value(price.getValue())
+        .build();
   }
 }

@@ -10,6 +10,6 @@ primary key (id));
 
 alter table price drop constraint if exists product_code_number_depard_unic;
 alter table price add constraint product_code_price_number_depart_unic unique
-(product_code, price_number, depart);
+(product_code, price_number, depart, price_begin, price_end );
 
-create sequence hibernate_sequence start with 4 increment by 1;
+create sequence hibernate_sequence start with 10 increment by 1;

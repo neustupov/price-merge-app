@@ -2,6 +2,7 @@ package ru.neustupov.pricemergeapp.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -32,19 +33,21 @@ public class PriceService {
     ThreadPoolExecutor executor =
         (ThreadPoolExecutor) Executors
             .newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
     List<Price> totalPrices = new ArrayList<>();
     List<Future<List<Price>>> futures = new ArrayList<>();
+    Map<String, List<Price>> compPriceMap = oldPrices.stream().collect(Collectors.groupingBy(
+        this::makeGroupId));
+
     for (Price newPrice : newPrices){
-      List<Price> concurPrices = oldPrices.stream()
-          .filter(oldPrice -> oldPrice.getProductCode().equals(newPrice.getProductCode())
-              && oldPrice.getDepart() == newPrice.getDepart()
-              && oldPrice.getNumber() == newPrice.getNumber())
-          .collect(Collectors.toList());
+      List<Price> concurPrices = compPriceMap.get(makeGroupId(newPrice));
+      // Если совпадений не найдено, просто добавляем новую цену в список без обработки
       if (concurPrices.isEmpty()){
         totalPrices.add(newPrice);
       } else {
         for (Price oldPrice : concurPrices) {
-          futures.add(executor.submit(new MergeTask(newPrice, oldPrice)));
+          Price price = new Price(oldPrice);
+          futures.add(executor.submit(new MergeTask(newPrice, price)));
         }
       }
     }
@@ -57,15 +60,23 @@ public class PriceService {
 
     futures.forEach(future -> {
       try {
-        totalPrices.addAll(future.get());
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } catch (ExecutionException e) {
+        future.get().forEach(price -> {
+          if (!totalPrices.contains(price)){
+            totalPrices.add(price);
+          }
+        });
+      } catch (InterruptedException | ExecutionException e) {
         e.printStackTrace();
       }
     });
 
     executor.shutdown();
     return totalPrices;
+  }
+
+  private String makeGroupId(Price price){
+    return price.getProductCode()
+        + price.getDepart()
+        + price.getNumber();
   }
 }
