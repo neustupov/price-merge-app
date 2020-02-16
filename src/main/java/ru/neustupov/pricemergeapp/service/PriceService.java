@@ -17,8 +17,12 @@ import ru.neustupov.pricemergeapp.repository.PriceRepository;
 @Service
 public class PriceService {
 
+  private final PriceRepository priceRepository;
+
   @Autowired
-  private PriceRepository priceRepository;
+  public PriceService(PriceRepository priceRepository) {
+    this.priceRepository = priceRepository;
+  }
 
   /**
    * Достаёт из репозитория список цен
