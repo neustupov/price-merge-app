@@ -50,8 +50,8 @@ public class PriceService {
    * Обработка производится в отдельных потоках, количество потоков выбирается исходя из параметров
    * системы.
    *
-   * @param newPrices Цена
-   * @param oldPrices Начало
+   * @param newPrices Новые цены
+   * @param oldPrices Старые цены
    */
   private List<Price> merge(List<Price> newPrices, List<Price> oldPrices) {
     ThreadPoolExecutor executor =
