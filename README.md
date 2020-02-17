@@ -31,7 +31,7 @@
 Метод в качестве параметров получает коллекцию имеющихся цен, новых цен и
 должен вернуть коллекцию объединенных цен, для дальнейшего сохранения в БД.
 
-Java8, SpringBoot 2.2.4, Tomcat, Maven, H2 DB
+Инструменты разработки - Java8, SpringBoot 2.2.4, Tomcat, Maven, H2 DB
 
 Основной метод обработки - https://github.com/neustupov/price-merge-app/blob/b117bf599fdecf43d9ffb7bdee597f75f2391ddb/src/main/java/ru/neustupov/pricemergeapp/service/PriceService.java#L56
 
