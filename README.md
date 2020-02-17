@@ -40,7 +40,7 @@ Java8, SpringBoot 2.2.4, Tomcat, Maven, H2 DB
 Кроме этого, проверить корректность обработки данных можно отправив Get запрос на http://localhost:8090/api/v1/prices/merge
 с body:
 
-#####request
+##### Request
 
 ```json
 [
@@ -102,7 +102,7 @@ Java8, SpringBoot 2.2.4, Tomcat, Maven, H2 DB
            }
        ]
 ```
-#####response : 
+##### Response : 
 
 ```json
 [
